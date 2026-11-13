@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://mobster.dev/schema/check.json
+# A Mobster check. Run it with: mobster verify --check <this file>
+version: 1
+name: The app opens on its welcome screen
+app:
+  path: .mobster/build/Build/Products/Debug-iphonesimulator/KickDebug.app
+device: iPhone 17 Pro
+expect:
+- text: Welcome to Kickstarter

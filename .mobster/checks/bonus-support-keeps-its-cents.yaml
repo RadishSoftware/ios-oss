@@ -12,7 +12,6 @@ steps:
 - Select the Gooseneck Kettle - Early Bird reward
 - Type 1.50 as the bonus support amount, then tap Done
 - Tap Continue
-relaunch: []
 expect:
 - text: Bonus support
 - text: $1.50

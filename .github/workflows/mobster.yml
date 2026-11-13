@@ -1,0 +1,60 @@
+# Mobster checks on a GitHub-hosted Mac (https://docs.mobster.dev/ci/github-hosted).
+# A probe on this branch only: it builds the OSS app, replays the saved checks and uploads the report. No secrets.
+name: mobster
+on:
+  push:
+    branches: [mobster-ci-probe]
+permissions:
+  contents: read
+concurrency:
+  group: mobster-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    runs-on: macos-15
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the diff needs the base branch
+      - name: Select Xcode 26
+        run: |
+          ls -d /Applications/Xcode*.app
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+          xcodebuild -version
+          xcrun simctl list runtimes
+      - name: Use the example secrets, with the OSS sample data on
+        run: |
+          sed 's/public static let isOSS = false/public static let isOSS = true/' Configs/Secrets.swift.example > KsApi/Sources/KsApi/Secrets.swift
+      - name: Install Mobster
+        id: mobster
+        run: |
+          brew install uv
+          echo "version=0.4.3" >> "$GITHUB_OUTPUT"
+          echo "xcode=$(xcodebuild -version | head -1 | tr -d ' ')" >> "$GITHUB_OUTPUT"
+      - name: Cache WebDriverAgent
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Application Support/app.mobster.desktop/wda
+          key: mobster-wda-${{ runner.arch }}-${{ steps.mobster.outputs.xcode }}-${{ steps.mobster.outputs.version }}
+          restore-keys: |
+            mobster-wda-${{ runner.arch }}-${{ steps.mobster.outputs.xcode }}-
+      - name: Prepare a simulator
+        run: |
+          uvx --python 3.12 --from mobster-cli==0.4.3 mobster sim doctor --fix
+      - name: Test what this branch changed
+        run: |
+          uvx --python 3.12 --from mobster-cli==0.4.3 mobster ci run --base origin/main -- --scheme "Kickstarter iOS"
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobster-report
+          path: .mobster/ci/
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Say what the comment would be
+        if: always()
+        run: |
+          uvx --python 3.12 --from mobster-cli==0.4.3 mobster ci comment --dry-run

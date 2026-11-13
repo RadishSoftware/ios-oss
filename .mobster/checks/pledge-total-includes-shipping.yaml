@@ -12,7 +12,6 @@ steps:
 - Select the Gooseneck Kettle - Early Bird reward
 - Tap the plus button of the bonus support stepper once, so bonus support is 1 dollar
 - Tap Continue
-relaunch: []
 expect:
 - text: Checkout
 - text: 'Shipping: United States'
