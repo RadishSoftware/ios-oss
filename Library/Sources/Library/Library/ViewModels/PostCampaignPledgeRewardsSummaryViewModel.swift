@@ -249,12 +249,16 @@ private func attributedRewardCurrency(
   amount: Double,
   omitUSCurrencyCode: Bool
 ) -> NSAttributedString {
+  // A whole amount stays short ("$10"). An amount with cents keeps them ("$10.50"), so the lines add up to
+  // the total under them: bonus support takes cents, and rounding it down to "$10" hid them.
+  let fractionDigits = amount.truncatingRemainder(dividingBy: 1) == 0 ? 0 : 2
   let currencyString = Format.currency(
     amount,
     currencyCode: currencyCode,
     omitCurrencyCode: omitUSCurrencyCode,
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0
+    roundingMode: .halfUp,
+    maximumFractionDigits: fractionDigits,
+    minimumFractionDigits: fractionDigits
   )
 
   return NSAttributedString(
