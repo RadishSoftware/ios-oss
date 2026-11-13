@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://mobster.dev/schema/check.json
+# A Mobster check. Run it with: mobster verify --check <this file>
+version: 1
+name: Back this project opens Checkout
+app:
+  path: .mobster/build/Build/Products/Debug-iphonesimulator/KickDebug.app
+device: iPhone 17 Pro
+steps:
+- Close the welcome screen
+- Open the Gooseneck Kettle project
+- Tap Back this project
+- Select the Gooseneck Kettle - Early Bird reward
+- Tap Continue
+relaunch: []
+expect:
+- text: Checkout
+- text: Your pledge
