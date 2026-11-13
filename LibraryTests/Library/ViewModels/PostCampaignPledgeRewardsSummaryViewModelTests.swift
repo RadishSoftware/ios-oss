@@ -122,6 +122,33 @@ final class PostCampaignPledgeRewardsSummaryViewModelTests: TestCase {
     XCTAssertNil(rewardItemData[3].headerText)
   }
 
+  func testLoadRewardsIntoDataSource_bonusSupportWithCents() {
+    let (rewardsData, _, pledgeData) = self.getTestData(useLatePledgeCosts: false)
+
+    self.vm.inputs.configureWith(
+      rewardsData: rewardsData,
+      bonusAmount: 10.5,
+      pledgeData: pledgeData
+    )
+
+    self.vm.inputs.viewDidLoad()
+
+    guard let rewardItemData = self.loadRewardsIntoDataSource.lastValue?.rewards else {
+      XCTFail("Should have data")
+      return
+    }
+
+    XCTAssertEqual(rewardItemData.count, 4)
+
+    // A whole amount reads as it did.
+    XCTAssertEqual(rewardItemData[0].text, "Reward 1")
+    XCTAssertEqual(rewardItemData[0].amount.string, "US$ 62")
+
+    // Bonus support keeps its cents instead of rounding down to US$ 10.
+    XCTAssertEqual(rewardItemData[3].text, "Bonus support")
+    XCTAssertEqual(rewardItemData[3].amount.string, "US$ 10.50")
+  }
+
   // MARK: Helpers
 
   func getTestData(useLatePledgeCosts: Bool)
