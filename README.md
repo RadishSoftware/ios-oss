@@ -15,6 +15,8 @@ and read more about our journey to open source [here](https://kickstarter.engine
 2. Clone this repository.
 
 &#42; To provide a mock version that serves up hard-coded data immediately, set `KsApi.Secrets.isOSS` = `true`.
+It serves one sample project with two rewards (`MockService.oss()`), so you can walk the pledge flow from
+Discover to checkout with no secrets.
 
 ## Some fun things to explore
 
