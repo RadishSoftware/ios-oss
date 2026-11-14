@@ -13,6 +13,10 @@ jobs:
   checks:
     runs-on: macos-15
     timeout-minutes: 150
+    env:
+      # A hosted Mac has 3 cores, and its load is over that from the checkout on: without this Mobster waits for calm
+      # and then refuses to boot the simulator.
+      MOBSTER_MAX_LOAD: "64"
     steps:
       - uses: actions/checkout@v4
         with:
