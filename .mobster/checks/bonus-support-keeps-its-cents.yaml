@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://mobster.dev/schema/check.json
+# A Mobster check. Run it with: mobster verify --check <this file>
+version: 1
+name: Bonus support keeps its cents in the pledge summary
+app:
+  path: .mobster/build/Build/Products/Debug-iphonesimulator/KickDebug.app
+device: iPhone 17 Pro
+steps:
+- Close the welcome screen
+- Open the Gooseneck Kettle project
+- Tap Back this project
+- Select the Gooseneck Kettle - Early Bird reward
+- Type 1.50 as the bonus support amount, then tap Done
+- Tap Continue once to open Checkout
+expect:
+- text: Bonus support
+- text: $1.50
+- text: $90.50

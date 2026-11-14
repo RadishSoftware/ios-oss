@@ -80,7 +80,7 @@ internal final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     #if DEBUG
       if KsApi.Secrets.isOSS {
-        AppEnvironment.replaceCurrentEnvironment(apiService: MockService())
+        AppEnvironment.replaceCurrentEnvironment(apiService: MockService.oss())
       }
     #endif
 
