@@ -1,12 +1,13 @@
-# Mobster checks on every pull request, on a GitHub-hosted Mac (https://docs.mobster.dev/ci/github-hosted).
+# A rehearsal on this branch only, before the pull request: Mobster checks, on a GitHub-hosted Mac (https://docs.mobster.dev/ci/github-hosted).
 # The checks replay the steps recorded in .mobster/cache/replay, so the job calls no model and needs no key.
 name: mobster
-on: pull_request
+on:
+  push:
+    branches: [mobster-ci-rehearsal]
 permissions:
   contents: read
-  pull-requests: write   # the one comment Mobster keeps up to date
 concurrency:
-  group: mobster-${{ github.event.pull_request.number }}
+  group: mobster-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   checks:
@@ -45,7 +46,7 @@ jobs:
           uvx --python 3.12 --from mobster-cli==0.4.3 mobster sim doctor --fix
       - name: Test what this PR changed
         run: |
-          uvx --python 3.12 --from mobster-cli==0.4.3 mobster ci run -- --scheme "Kickstarter iOS"
+          uvx --python 3.12 --from mobster-cli==0.4.3 mobster ci run --base origin/main -- --scheme "Kickstarter iOS"
       - name: Upload the report
         id: upload
         if: always()
@@ -59,7 +60,7 @@ jobs:
       - name: Comment on the PR
         if: always()
         run: |
-          uvx --python 3.12 --from mobster-cli==0.4.3 mobster ci comment
+          uvx --python 3.12 --from mobster-cli==0.4.3 mobster ci comment --dry-run
         env:
           GITHUB_TOKEN: ${{ github.token }}
           MOBSTER_ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
